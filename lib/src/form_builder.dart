@@ -199,26 +199,27 @@ class FormBuilderState extends State<FormBuilder> {
   }
 
   void unregisterField(String name, FormBuilderFieldState field) {
-    assert(_fields.containsKey(name));
-    // Only remove the field when it is the one registered.  It's possible that
-    // the field is replaced (registerField is called twice for a given name)
-    // before unregisterField is called for the name, so just emit a warning
-    // since it may be intentional.
-    if (field == _fields[name]) {
-      _fields.remove(name);
-      _transformers.remove(name);
-      if (widget.clearValueOnUnregister) {
-        _instantValue.remove(name);
-        _savedValue.remove(name);
+    if(_fields.containsKey(name)){
+      // Only remove the field when it is the one registered.  It's possible that
+      // the field is replaced (registerField is called twice for a given name)
+      // before unregisterField is called for the name, so just emit a warning
+      // since it may be intentional.
+      if (field == _fields[name]) {
+        _fields.remove(name);
+        _transformers.remove(name);
+        if (widget.clearValueOnUnregister) {
+          _instantValue.remove(name);
+          _savedValue.remove(name);
+        }
+      } else {
+        assert(() {
+          // This is OK to ignore when you are intentionally replacing a field
+          // with another field using the same name.
+          debugPrint('Warning! Ignoring Field unregistration for $name'
+              ' -- this is OK to ignore as long as the field was intentionally replaced');
+          return true;
+        }());
       }
-    } else {
-      assert(() {
-        // This is OK to ignore when you are intentionally replacing a field
-        // with another field using the same name.
-        debugPrint('Warning! Ignoring Field unregistration for $name'
-            ' -- this is OK to ignore as long as the field was intentionally replaced');
-        return true;
-      }());
     }
   }
 
